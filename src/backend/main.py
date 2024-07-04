@@ -111,6 +111,32 @@ def _edit_persona():
     return {"success": edit_character(character)}
 
 
+# LISTAR LOS VEHICULOS DE TODAS LAS PERSONAS
+
+
+@app.route("/personas/<id>/vehiculos", methods=["GET"])
+def listar_vehiculos_de_una_persona(id):
+    try:
+        vehiculos = Vehiculo.query.all()
+
+        vehiculos_data = []
+        for vehiculo in vehiculos:
+            vehiculo_data = {
+                "id": vehiculo.id,
+                "patente": vehiculo.patente,
+                "fabricante": vehiculo.fabricante,
+                "tipo": vehiculo.tipo,
+                "modelo": vehiculo.modelo,
+                "anio": vehiculo.anio,
+                "valor": vehiculo.valor,
+                "persona_id": vehiculo.persona_id
+            }
+            vehiculos_data.append(vehiculo_data)
+        return jsonify(vehiculos_data)
+    except Exception as error:
+        print("Error", error)
+
+
 if __name__ == "__main__":
     print("Iniciando servidor...")
     db.init_app(app)
