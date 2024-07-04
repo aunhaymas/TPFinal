@@ -114,10 +114,36 @@ def _edit_persona():
 # LISTAR LOS VEHICULOS DE TODAS LAS PERSONAS
 
 
+@app.route("/vehiculos", methods=["GET"])
+def listar_vehiculos():
+    try:
+        vehiculos = Vehiculo.query.all()
+
+        vehiculos_data = []
+        for vehiculo in vehiculos:
+            vehiculo_data = {
+                "id": vehiculo.id,
+                "patente": vehiculo.patente,
+                "fabricante": vehiculo.fabricante,
+                "tipo": vehiculo.tipo,
+                "modelo": vehiculo.modelo,
+                "anio": vehiculo.anio,
+                "valor": vehiculo.valor,
+                "persona_id": vehiculo.persona_id
+            }
+            vehiculos_data.append(vehiculo_data)
+        return jsonify(vehiculos_data)
+    except Exception as error:
+        print("Error", error)
+
+
+# LISTAR LOS VEHICULOS DE UNA PERSONA
+
+
 @app.route("/personas/<id>/vehiculos", methods=["GET"])
 def listar_vehiculos_de_una_persona(id):
     try:
-        vehiculos = Vehiculo.query.all()
+        vehiculos = Vehiculo.query.where(Vehiculo.persona_id == id).all()
 
         vehiculos_data = []
         for vehiculo in vehiculos:
