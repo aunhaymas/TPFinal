@@ -5,11 +5,11 @@ db = SQLAlchemy()
 
 
 class Persona(db.Model):
-    __tablename__ = 'personas'
+    __tablename__ = "personas"
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(80), nullable=False)
     apellido = db.Column(db.String(80), nullable=False)
-    email = db.Column(db.String(80), nullable=False, unique = True)
+    email = db.Column(db.String(80), nullable=False, unique=True)
     contrasenia = db.Column(db.String(80), nullable=False)
     fecha_nacimiento = db.Column(
         db.DateTime, nullable=False, default=datetime.datetime.now()
@@ -19,7 +19,7 @@ class Persona(db.Model):
 
 
 class Vehiculo(db.Model):
-    __tablename__ = 'vehiculos'
+    __tablename__ = "vehiculos"
     id = db.Column(db.Integer, primary_key=True)
     patente = db.Column(db.String(80), unique=True)  # UNIQUE
     fabricante = db.Column(db.String(80), nullable=False)
@@ -27,10 +27,13 @@ class Vehiculo(db.Model):
     modelo = db.Column(db.String(80), nullable=False)
     anio = db.Column(db.Integer, nullable=False)
     valor = db.Column(db.Float, nullable=False)  # VALOR FLOAT
-    persona_id = db.Column(db.Integer, db.ForeignKey('personas.id'))  # FORÁNEA A PERSONA
+    persona_id = db.Column(
+        db.Integer, db.ForeignKey("personas.id")
+    )  # FORÁNEA A PERSONA
+
 
 class Tramite(db.Model):
-    __tablename__ = 'tramites'
+    __tablename__ = "tramites"
     id = db.Column(db.Integer, primary_key=True)
     tipo = db.Column(db.String(256), nullable=False)
     valor = db.Column(db.Float, nullable=False)  # VALOR PRECIO FLOAT
@@ -38,7 +41,35 @@ class Tramite(db.Model):
         db.DateTime, nullable=False, default=datetime.datetime.now()
     )
     fecha_cita = db.Column(db.DateTime, nullable=False, default=datetime.datetime.now())
-    persona_id = db.Column(db.Integer, db.ForeignKey('personas.id'))  # FORÁNEA A PERSONA
+    persona_id = db.Column(
+        db.Integer, db.ForeignKey("personas.id")
+    )  # FORÁNEA A PERSONA
+
+
+def get_all_personas() -> list[dict[str,str]] | None:
+    try:
+        personas = Persona.query.all()
+        if not personas:
+            return None
+        personas_lista = []
+        
+        for persona in personas:
+            personas_dict ={
+                 "id": persona.id,
+                "nombre": persona.nombre,
+                "apellido": persona.apellido,
+                "email": persona.email,
+                "contrasenia": persona.contrasenia,
+                "fecha_nacimiento": persona.fecha_nacimiento.strftime("%Y-%m-%d"),
+                "sexo": persona.sexo,
+                "domicilio": persona.domicilio,
+            }
+            personas_lista.append(personas_dict)
+        return personas_lista
+    except Exception as e:
+        print("Error en la base de datos, uy ", e)
+        return None
+        
 
 
 # PRE: ID (entero) de la persona a buscar
@@ -46,7 +77,6 @@ class Tramite(db.Model):
 def get_persona_por_id(id: int) -> dict[str, str] | None:
     # Consulta a la base de datos
     persona = Persona.query.get(id)
-
     try:
         if persona:
             return {
@@ -63,10 +93,16 @@ def get_persona_por_id(id: int) -> dict[str, str] | None:
     except Exception as e:
         print(f"Error al consultar con la base de datos! {e}")
         return None
-        
-def nueva_persona() -> dict[str, str] | None:
-    return 
 
-def remove_persona(id: int) -> bool:
+
+def editar_persona(persona: dict[str, str]) -> bool:
+    return
+
+
+def nueva_persona(persona: dict[str, str]) -> bool:
+    return
+
+
+def eliminar_persona(id: int) -> bool:
     encontrado = False
     return encontrado
