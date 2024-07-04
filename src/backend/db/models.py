@@ -46,16 +46,16 @@ class Tramite(db.Model):
     )  # FORÁNEA A PERSONA
 
 
-def get_all_personas() -> list[dict[str,str]] | None:
+def get_all_personas() -> list[dict[str, str]] | None:
     try:
         personas = Persona.query.all()
         if not personas:
             return None
         personas_lista = []
-        
+
         for persona in personas:
-            personas_dict ={
-                 "id": persona.id,
+            personas_dict = {
+                "id": persona.id,
                 "nombre": persona.nombre,
                 "apellido": persona.apellido,
                 "email": persona.email,
@@ -69,8 +69,6 @@ def get_all_personas() -> list[dict[str,str]] | None:
     except Exception as e:
         print("Error en la base de datos, uy ", e)
         return None
-        
-
 
 # PRE: ID (entero) de la persona a buscar
 # POST: Diccionario tabla/valor o NONE
@@ -93,14 +91,45 @@ def get_persona_por_id(id: int) -> dict[str, str] | None:
     except Exception as e:
         print(f"Error al consultar con la base de datos! {e}")
         return None
-    
-# PRE: ID (entero) de la persona a buscar
-# POST: Diccionario tabla/valor con vehiculos o NONE
-def get_persona_con_vehiculos(id: int) -> dict[str, str] | None:
+
+def vehiculo_dict(vehiculos) -> list[dict[str, str]]:
+    vehiculo_list = []
+    for vehiculo in vehiculos:
+        vehiculo_dict = {
+            "id": vehiculo.id,
+            "patente": vehiculo.patente,
+            "fabricante": vehiculo.fabricante,
+            "tipo": vehiculo.tipo,
+            "modelo": vehiculo.modelo,
+            "anio": vehiculo.anio,
+            "valor": vehiculo.valor,
+        }
+        vehiculo_list.append(vehiculo_dict)
+    return vehiculo_list
+
+
+def tramite_dict(tramites) -> list[dict[str, str]]:
+    tramite_list = []
+    for tramite in tramites:
+        tramite_dict = {
+            "id": tramite.id,
+            "tipo": tramite.tipo,
+            "valor": tramite.valor,
+            "fecha_tramite": tramite.fecha_tramite,
+            "fecha_cita": tramite.fecha_cita,
+        }
+        tramite_list.append(tramite_dict)
+    return tramite_list
+
+
+def get_persona_full_info(id: int) -> dict[str, str] | None:
     try:
-        persona=Persona.query.get(id)
+        persona = Persona.query.get(id)
+        if not persona:
+            return None
+        tramites = Tramite.query.filter_by(persona_id=id).all()
         vehiculos = Vehiculo.query.filter_by(persona_id=id).all()
-        persona_dict = {
+        persona_list = {
             "id": persona.id,
             "nombre": persona.nombre,
             "apellido": persona.apellido,
@@ -109,25 +138,14 @@ def get_persona_con_vehiculos(id: int) -> dict[str, str] | None:
             "fecha_nacimiento": persona.fecha_nacimiento.strftime("%Y-%m-%d"),
             "sexo": persona.sexo,
             "domicilio": persona.domicilio,
-            "vehiculos": []
+            "vehiculos": vehiculo_dict(vehiculos),
+            "tramites": tramite_dict(tramites),
         }
-        for vehiculo in vehiculos:
-            vehiculo_dict = {
-                    "id": vehiculo.id,
-                    "patente": vehiculo.patente,
-                    "fabricante": vehiculo.fabricante,
-                    "tipo": vehiculo.tipo,
-                    "modelo": vehiculo.modelo,
-                    "anio": vehiculo.anio,
-                    "valor": vehiculo.valor
-                }
-            persona_dict["vehiculos"].append(vehiculo_dict)
-        return persona_dict
+        return persona_list
     except Exception as e:
-        print("Error en la base de datos, uy ", e)
+        print("Uy quieto. Error :", e)
         return None
-        
-    
+
 
 def editar_persona(persona: dict[str, str]) -> bool:
     return
