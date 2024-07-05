@@ -179,3 +179,33 @@ def eliminar_persona(id: int) -> bool:
     except Exception as e:
         print("Uy, quieto. Error: ", e)
     return encontrado
+
+def eliminar_tramite(id: int) -> bool:
+    encontrado = False
+    try:
+        tramite = Tramite.query.get(id)
+        if tramite:
+            encontrado = True
+            print('tramite ',tramite.nombre," Eliminada correctamente.")
+            db.session.delete(tramite)
+            db.session.commit()
+        else:
+            print("No se encontro un registro de la tramite con id: ",id)
+    except Exception as e:
+        print("Uy, quieto. Error: ", e)
+    return encontrado
+
+def eliminar_vehiculo(id: int) -> bool:
+    encontrado = False
+    try:
+        vehiculo = Vehiculo.query.get(id)
+        if vehiculo:
+            encontrado = True
+            print('vehiculo ',vehiculo.nombre," Eliminada correctamente.")
+            db.session.delete(vehiculo)
+            db.session.commit()
+        else:
+            print("No se encontro un registro de la vehiculo con id: ",id)
+    except Exception as e:
+        print("Uy, quieto. Error: ", e)
+    return encontrado
