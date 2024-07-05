@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
@@ -60,7 +60,7 @@ def get_all_personas() -> list[dict[str, str]] | None:
                 "apellido": persona.apellido,
                 "email": persona.email,
                 "contrasenia": persona.contrasenia,
-                "fecha_nacimiento": persona.fecha_nacimiento.strftime("%Y-%m-%d"),
+                "fecha_nacimiento": persona.fecha_nacimiento.strftime("%d-%m-%Y"),
                 "sexo": persona.sexo,
                 "domicilio": persona.domicilio,
             }
@@ -84,6 +84,7 @@ def get_persona_por_id(id: int) -> dict[str, str] | None:
                 "apellido": persona.apellido,
                 "email": persona.email,
                 "contrasenia": persona.contrasenia,
+                #strftime convierte un datetime a texto
                 "fecha_nacimiento": persona.fecha_nacimiento.strftime("%d-%m-%Y"),
                 "sexo": persona.sexo,
                 "domicilio": persona.domicilio,
@@ -143,7 +144,8 @@ def get_persona_full_info(id: int) -> dict[str, str] | None:
             "apellido": persona.apellido,
             "email": persona.email,
             "contrasenia": persona.contrasenia,
-            "fecha_nacimiento": persona.fecha_nacimiento.strftime("%Y-%m-%d"),
+            #strftime convierte un datetime a texto
+            "fecha_nacimiento": persona.fecha_nacimiento.strftime("%d-%m-%Y"),
             "sexo": persona.sexo,
             "domicilio": persona.domicilio,
             "vehiculos": vehiculo_dict(vehiculos),
@@ -155,15 +157,35 @@ def get_persona_full_info(id: int) -> dict[str, str] | None:
         return None
 
 
-def editar_persona(persona: dict[str, str]) -> bool:
-    return
+def editar_persona(id: int, persona_editada: dict[str, str]) -> bool:
+    editada = False
+    try:
+        persona = Persona.query.get(id)
+        if persona:
+            persona.nombre = persona_editada["nombre"]
+            persona.apellido = persona_editada["apellido"]
+            persona.email = persona_editada["email"]
+            persona.contrasenia = persona_editada["contrasenia"]
+            #strptime convierte un texto a objeto datetime
+            persona.fecha_nacimiento = datetime.strptime(persona_editada["fecha_nacimiento"], "%d-%m-%Y")
+            persona.sexo = persona_editada["sexo"]
+            persona.domicilio = persona_editada["domicilio"]
+            db.session.commit()
+            editada = True
+        else:
+            print("No se encontró un registro con la persona: ",id)
+    except Exception as e:
+        print("Uy, quieto. Error: ", e)
+    return editada
 
 
 def nueva_persona(persona: dict[str, str]) -> bool:
     return
 
-#PRE: id entero
-#POST: Booleano para indicando el estado de la eliminacion
+
+# PRE: id entero
+# POST: Booleano para indicando el estado de la eliminacion
+
 
 def eliminar_persona(id: int) -> bool:
     encontrado = False
@@ -171,14 +193,15 @@ def eliminar_persona(id: int) -> bool:
         persona = Persona.query.get(id)
         if persona:
             encontrado = True
-            print('Persona ',persona.nombre," Eliminada correctamente.")
+            print("Persona ", persona.nombre, " Eliminada correctamente.")
             db.session.delete(persona)
             db.session.commit()
         else:
-            print("No se encontro un registro de la persona con id: ",id)
+            print("No se encontro un registro de la persona con id: ", id)
     except Exception as e:
         print("Uy, quieto. Error: ", e)
     return encontrado
+
 
 def eliminar_tramite(id: int) -> bool:
     encontrado = False
@@ -186,14 +209,15 @@ def eliminar_tramite(id: int) -> bool:
         tramite = Tramite.query.get(id)
         if tramite:
             encontrado = True
-            print('tramite ',tramite.nombre," Eliminada correctamente.")
+            print("tramite ", tramite.nombre, " Eliminada correctamente.")
             db.session.delete(tramite)
             db.session.commit()
         else:
-            print("No se encontro un registro de la tramite con id: ",id)
+            print("No se encontro un registro de la tramite con id: ", id)
     except Exception as e:
         print("Uy, quieto. Error: ", e)
     return encontrado
+
 
 def eliminar_vehiculo(id: int) -> bool:
     encontrado = False
@@ -201,11 +225,11 @@ def eliminar_vehiculo(id: int) -> bool:
         vehiculo = Vehiculo.query.get(id)
         if vehiculo:
             encontrado = True
-            print('vehiculo ',vehiculo.nombre," Eliminada correctamente.")
+            print("vehiculo ", vehiculo.nombre, " Eliminada correctamente.")
             db.session.delete(vehiculo)
             db.session.commit()
         else:
-            print("No se encontro un registro de la vehiculo con id: ",id)
+            print("No se encontro un registro de la vehiculo con id: ", id)
     except Exception as e:
         print("Uy, quieto. Error: ", e)
     return encontrado
