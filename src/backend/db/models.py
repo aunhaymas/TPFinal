@@ -70,6 +70,7 @@ def get_all_personas() -> list[dict[str, str]] | None:
         print("Error en la base de datos, uy ", e)
         return None
 
+
 # PRE: ID (entero) de la persona a buscar
 # POST: Diccionario tabla/valor o NONE
 def get_persona_por_id(id: int) -> dict[str, str] | None:
@@ -92,6 +93,9 @@ def get_persona_por_id(id: int) -> dict[str, str] | None:
         print(f"Error al consultar con la base de datos! {e}")
         return None
 
+
+# PRE: Recibe una query Vehiculo.query.etc().all()
+# POST: Devuelve una lista de diccionarios
 def vehiculo_dict(vehiculos) -> list[dict[str, str]]:
     vehiculo_list = []
     for vehiculo in vehiculos:
@@ -108,6 +112,8 @@ def vehiculo_dict(vehiculos) -> list[dict[str, str]]:
     return vehiculo_list
 
 
+# PRE: Recibe una query Tramite.query.etc().all()
+# POST: Devuelve una lista de diccionarios
 def tramite_dict(tramites) -> list[dict[str, str]]:
     tramite_list = []
     for tramite in tramites:
@@ -122,6 +128,8 @@ def tramite_dict(tramites) -> list[dict[str, str]]:
     return tramite_list
 
 
+# PRE: id entero
+# POST: Diccionario de una persona con vehiculos y tramites
 def get_persona_full_info(id: int) -> dict[str, str] | None:
     try:
         persona = Persona.query.get(id)
@@ -154,7 +162,20 @@ def editar_persona(persona: dict[str, str]) -> bool:
 def nueva_persona(persona: dict[str, str]) -> bool:
     return
 
+#PRE: id entero
+#POST: Booleano para indicando el estado de la eliminacion
 
 def eliminar_persona(id: int) -> bool:
     encontrado = False
+    try:
+        persona = Persona.query.get(id)
+        if persona:
+            encontrado = True
+            print('Persona ',persona.nombre," Eliminada correctamente.")
+            db.session.delete(persona)
+            db.session.commit()
+        else:
+            print("No se encontro un registro de la persona con id: ",id)
+    except Exception as e:
+        print("Uy, quieto. Error: ", e)
     return encontrado
