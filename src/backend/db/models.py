@@ -2,7 +2,15 @@ from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
+"""Funciones sql
+Objeto_Modelo.query.all()
+Objeto_Modelo.query.get(id)
+Objeto_Modelo.query.filter_by( ObejoModelo.foreignKey = primaryKey).all()
+Tramite.query.filter_by(persona_id=id).all()
 
+db.session.add(Objeto_Modelo) insert into tabla (Objeto_Modelo)
+db.session.commit() confirmar los cambios
+"""
 
 class Persona(db.Model):
     __tablename__ = "personas"
@@ -68,6 +76,7 @@ def get_all_personas() -> list[dict[str, str]] | None:
         return personas_lista
     except Exception as e:
         print("Error en la base de datos, uy ", e)
+        db.session.rollback()
         return None
 
 
@@ -91,7 +100,8 @@ def get_persona_por_id(id: int) -> dict[str, str] | None:
             }
         return None
     except Exception as e:
-        print(f"Error al consultar con la base de datos! {e}")
+        print("Error al consultar con la base de datos! ",e)
+        db.session.rollback()
         return None
 
 
@@ -154,8 +164,12 @@ def get_persona_full_info(id: int) -> dict[str, str] | None:
         return persona_list
     except Exception as e:
         print("Uy quieto. Error :", e)
+        db.session.rollback()
         return None
 
+
+# PRE: id entero, dict de nueva_persona
+# POST: Actualiza la persona en id, con los datos
 
 def editar_persona(id: int, persona_editada: dict[str, str]) -> bool:
     editada = False
@@ -170,17 +184,33 @@ def editar_persona(id: int, persona_editada: dict[str, str]) -> bool:
             persona.fecha_nacimiento = datetime.strptime(persona_editada["fecha_nacimiento"], "%d-%m-%Y")
             persona.sexo = persona_editada["sexo"]
             persona.domicilio = persona_editada["domicilio"]
+            
             db.session.commit()
             editada = True
         else:
             print("No se encontró un registro con la persona: ",id)
     except Exception as e:
         print("Uy, quieto. Error: ", e)
+        db.session.rollback()
     return editada
 
-
-def nueva_persona(persona: dict[str, str]) -> bool:
-    return
+def nueva_persona(persona_nueva: dict[str, str]) -> bool:
+    exito = False
+    try:
+        persona = Persona(
+            nombre = persona_nueva["nombre"],
+            apellido = persona_nueva["apellido"],
+            email=persona_nueva["email"],
+            contrasenia=persona_nueva["contrasenia"],
+            fecha_nacimiento=datetime.strptime(persona_nueva["fecha_nacimiento"], "%d-%m-%Y"),
+            sexo=persona_nueva["sexo"],
+            domicilio=persona_nueva["domicilio"],
+        )
+        db.session.add(persona)
+        db.session.commit
+    except Exception e:
+        print("Uy, quieto. Error: ", e)
+    return exito
 
 
 # PRE: id entero
@@ -200,6 +230,7 @@ def eliminar_persona(id: int) -> bool:
             print("No se encontro un registro de la persona con id: ", id)
     except Exception as e:
         print("Uy, quieto. Error: ", e)
+        db.session.rollback()
     return encontrado
 
 
@@ -216,6 +247,7 @@ def eliminar_tramite(id: int) -> bool:
             print("No se encontro un registro de la tramite con id: ", id)
     except Exception as e:
         print("Uy, quieto. Error: ", e)
+        db.session.rollback()
     return encontrado
 
 
@@ -232,4 +264,5 @@ def eliminar_vehiculo(id: int) -> bool:
             print("No se encontro un registro de la vehiculo con id: ", id)
     except Exception as e:
         print("Uy, quieto. Error: ", e)
+        db.session.rollback()
     return encontrado
