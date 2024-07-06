@@ -243,6 +243,22 @@ def eliminar_persona(id: int) -> bool:
         db.session.rollback()
     return encontrado
 
+def nuevo_tramite(tramite_nuevo: dict[str,str]) -> bool:
+    exito = False
+    try:
+        tramite = Tramite(
+            tipo = tramite_nuevo["tipo"],
+            tipo = tramite_nuevo["valor"],
+            tipo = tramite_nuevo["fecha_tramite"],
+            tipo = tramite_nuevo["fecha_cita"],
+            tipo = tramite_nuevo["persona_id"],
+        )
+        db.session.add(tramite)
+        db.session.commit()
+    except Exception as e:
+        print("Uy, quieto. Error: ", e)
+        db.session.rollback()
+    return exito
 
 def eliminar_tramite(id: int) -> bool:
     encontrado = False
