@@ -44,7 +44,14 @@ def listar_personas():
 # DEVOLVER PERSONA POR ID
 @app.route("/personas/<id>")
 def persona_id(id):
-    return get_persona_por_id(id)
+    try:
+        persona = get_persona_por_id(id)
+        if persona != None:
+            return jsonify(persona),200
+        else:
+            return jsonify({"error": f"Persona no encontrada con id: {id}"}), 404
+    except Exception as e:
+        return jsonify({"Error al obtener persona: ",e}), 500
 
 
 # ELIMINAR PERSONA
