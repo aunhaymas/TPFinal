@@ -40,6 +40,7 @@ def listar_personas():
     except Exception as e:
         return jsonify({"Error: ": e}), 500
 
+# DEVOLVER TRAMITES POR PERSONA ID
 @app.route("/personas/<id>/tramites")
 def listar_tramites_por_persona(id):
     try:
@@ -50,10 +51,20 @@ def listar_tramites_por_persona(id):
             return jsonify({"Error: ": f"No hay tramites en la base de datos para esta persona {id}"}), 404
     except Exception as e:
         return jsonify({"Error: ", e}), 500
-            
+# DEVOLVER VEHICULOS POR PERSONA ID
+@app.route("/personas/<id>/vehiculos",methods=["GET"])
+def listar_vehiculos_por_persona(id):
+    try:
+        vehiculos = get_vehiculos_por_persona(id)
+        if vehiculos:
+            return jsonify(vehiculos), 200
+        else:
+            return jsonify({"Error: ": f"No hay vehiculos en la base de datos para esta persona {id}"}), 404
+    except Exception as e:
+        return jsonify({"Error: ", e}), 500            
 
 # DEVOLVER PERSONA POR ID
-@app.route("/personas/<id>")
+@app.route("/personas/<id>",methods=["GET"])
 def persona_id(id):
     try:
         persona = get_persona_por_id(id)
@@ -63,6 +74,7 @@ def persona_id(id):
             return jsonify({"error": f"Persona no encontrada con id: {id}"}), 404
     except Exception as e:
         return jsonify({"Error al obtener persona: ",e}), 500
+
 
 
 # ELIMINAR PERSONA
