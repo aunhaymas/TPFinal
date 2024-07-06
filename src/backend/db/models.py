@@ -24,7 +24,7 @@ class Persona(db.Model):
     email = db.Column(db.String(80), nullable=False, unique=True)
     contrasenia = db.Column(db.String(80), nullable=False)
     fecha_nacimiento = db.Column(
-        db.DateTime, nullable=False, default=datetime.datetime.now()
+        db.DateTime, nullable=False, default=datetime.now()
     )
     sexo = db.Column(db.String(20), nullable=False)
     domicilio = db.Column(db.String(80), nullable=False)
@@ -50,9 +50,9 @@ class Tramite(db.Model):
     tipo = db.Column(db.String(256), nullable=False)
     valor = db.Column(db.Float, nullable=False)  # VALOR PRECIO FLOAT
     fecha_tramite = db.Column(
-        db.DateTime, nullable=False, default=datetime.datetime.now()
+        db.DateTime, nullable=False, default=datetime.now()
     )
-    fecha_cita = db.Column(db.DateTime, nullable=False, default=datetime.datetime.now())
+    fecha_cita = db.Column(db.DateTime, nullable=False, default=datetime.now())
     persona_id = db.Column(
         db.Integer, db.ForeignKey("personas.id")
     )  # FORÁNEA A PERSONA
@@ -217,7 +217,8 @@ def nueva_persona(persona_nueva: dict[str, str]) -> bool:
             domicilio=persona_nueva["domicilio"],
         )
         db.session.add(persona)
-        db.session.commit
+        db.session.commit()
+        exito = True
     except Exception as e:
         print("Uy, quieto. Error: ", e)
     return exito
@@ -249,10 +250,10 @@ def nuevo_tramite(tramite_nuevo: dict[str, str]) -> bool:
     try:
         tramite = Tramite(
             tipo=tramite_nuevo["tipo"],
-            tipo=tramite_nuevo["valor"],
-            tipo=tramite_nuevo["fecha_tramite"],
-            tipo=tramite_nuevo["fecha_cita"],
-            tipo=tramite_nuevo["persona_id"],
+            valor=float(tramite_nuevo["valor"]),
+            fecha_tramite=datetime.strptime(tramite_nuevo["fecha_tramite"], "%d-%m-%Y"),
+            fecha_cita=datetime.strptime(tramite_nuevo["fecha_cita"], "%d-%m-%Y"),
+            persona_id=int(tramite_nuevo["persona_id"]),
         )
         db.session.add(tramite)
         db.session.commit()
@@ -269,7 +270,7 @@ def eliminar_tramite(id: int) -> bool:
         tramite = Tramite.query.get(id)
         if tramite:
             encontrado = True
-            print("tramite ", tramite.nombre, " Eliminada correctamente.")
+            print("tramite ", tramite.id, " Eliminada correctamente.")
             db.session.delete(tramite)
             db.session.commit()
         else:
@@ -286,10 +287,9 @@ def editar_tramite(id: int, tramite_editado: dict[str, str]) -> bool:
         tramite = Tramite.query.get(id)
         if tramite:
             tramite.tipo = tramite_editado["tipo"]
-            tramite.valor = tramite_editado["valor"]
-            tramite.fecha_tramite = datetime.strptime(tramite_editado["fecha_tramite"])
-            tramite.fecha_cita = datetime.strptime(tramite_editado["fecha_cita"])
-            tramite.valor = tramite_editado["valor"]
+            tramite.fecha_tramite = datetime.strptime(tramite_editado["fecha_tramite"], "%d-%m-%Y")
+            tramite.fecha_cita = datetime.strptime(tramite_editado["fecha_cita"], "%d-%m-%Y" )
+            tramite.valor = float(tramite_editado["valor"])
             db.session.commit()
             editado = True
         else:
@@ -308,8 +308,9 @@ def nuevo_vehiculo(vehiculo_nuevo: dict[str, str]) -> bool:
             fabricante = vehiculo_nuevo["fabricante"],
             tipo = vehiculo_nuevo["tipo"],
             modelo = vehiculo_nuevo["modelo"],
-            anio = vehiculo_nuevo["anio"],
-            valor = vehiculo_nuevo["valor"],            
+            anio = int(vehiculo_nuevo["anio"]),
+            valor = float(vehiculo_nuevo["valor"]),
+            persona_id = int(vehiculo_nuevo["persona_id"]),           
         )
         db.session.add(vehiculo)
         db.session.commit()
@@ -328,8 +329,9 @@ def editar_vehiculo(id: int, vehiculo_editado: dict[str, str]) -> bool:
             vehiculo.fabricante = vehiculo_editado["fabricante"]
             vehiculo.tipo = vehiculo_editado["tipo"]
             vehiculo.modelo = vehiculo_editado["modelo"]
-            vehiculo.anio = vehiculo_editado["anio"]
-            vehiculo.valor = vehiculo_editado["valor"]
+            vehiculo.anio = int(vehiculo_editado["anio"])
+            vehiculo.valor = float(vehiculo_editado["valor"])
+            vehiculo.persona_id = int(vehiculo_editado["persona_id"])
             db.session.commit()
             editado = True
         else:
@@ -345,7 +347,7 @@ def eliminar_vehiculo(id: int) -> bool:
         vehiculo = Vehiculo.query.get(id)
         if vehiculo:
             encontrado = True
-            print("vehiculo ", vehiculo.nombre, " Eliminada correctamente.")
+            print("vehiculo ", vehiculo.id, " Eliminada correctamente.")
             db.session.delete(vehiculo)
             db.session.commit()
         else:
