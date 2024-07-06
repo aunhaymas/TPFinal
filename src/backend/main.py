@@ -28,7 +28,7 @@ def home():
     """
 
 
-# DEVOLVER JSON CON CHARS
+# DEVOLVER JSON CON PERSONAS
 @app.route("/personas")
 def listar_personas():
     try:
@@ -36,10 +36,21 @@ def listar_personas():
         if personas != None:
             return jsonify(personas), 200
         else:
-            return jsonify({"Error: ", "No hay personas en la base de datos"}), 404
+            return jsonify({"Error: ": "No hay personas en la base de datos"}), 404
+    except Exception as e:
+        return jsonify({"Error: ": e}), 500
+
+@app.route("/personas/<id>/tramites")
+def listar_tramites_por_persona(id):
+    try:
+        tramites = get_tramites_por_persona(id)
+        if tramites:
+            return jsonify(tramites), 200
+        else:
+            return jsonify({"Error: ": f"No hay tramites en la base de datos para esta persona {id}"}), 404
     except Exception as e:
         return jsonify({"Error: ", e}), 500
-
+            
 
 # DEVOLVER PERSONA POR ID
 @app.route("/personas/<id>")
