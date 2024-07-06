@@ -259,6 +259,24 @@ def eliminar_tramite(id: int) -> bool:
         print("Uy, quieto. Error: ", e)
         db.session.rollback()
     return encontrado
+def editar_tramite(id: int, tramite_editado: dict[str,str]) -> bool:
+    editado = False
+    try:
+        tramite = Tramite.query.get(id)
+        if tramite:
+            tramite.tipo = tramite_editado["tipo"]
+            tramite.valor = tramite_editado["valor"]
+            tramite.fecha_tramite = datetime.strptime(tramite_editado["fecha_tramite"])
+            tramite.fecha_cita = datetime.strptime(tramite_editado["fecha_cita"])
+            tramite.valor = tramite_editado["valor"]
+            db.session.commit()
+            editado = True
+        else:
+            print("Tramite ",id, " No encontrado :c")                
+    except Exception as e:
+        print("Uy, quieto. Error: ", e)
+        db.session.rollback()
+    return editado
 
 
 def eliminar_vehiculo(id: int) -> bool:
