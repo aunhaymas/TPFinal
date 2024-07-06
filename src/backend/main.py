@@ -16,7 +16,7 @@ CORS(app)
 # HOME
 @app.route("/")
 def home():
-    personas = get_persona_con_vehiculos(1)
+    personas = get_persona_full_info(1)
     print(personas)
     return """
 <html>
@@ -32,21 +32,13 @@ def home():
 @app.route("/personas")
 def listar_personas():
     try:
-        personas = Persona.query.all()
-        personas_data = []
-        for persona in personas:
-            persona_data = {
-                "nombre": persona.nombre,
-                "apellido": persona.apellido,
-                "email": persona.email,
-                "contrasenia": persona.contrasenia,
-                "dni": persona.dni,
-                "fecha_nacimiento": persona.fecha_nacimiento,
-                "sexo": persona.sexo,
-                "domicilio": persona.domicilio,
-            }
-    except:
-        return 1
+        personas =  get_all_personas()
+        if personas != None:
+            return jsonify(personas), 200
+        else:
+            return jsonify({"Error: ", "No hay personas en la base de datos"}), 404
+    except Exception as e:
+        return jsonify({"Error: ", e}), 500
 
 
 # DEVOLVER PERSONA POR ID
@@ -80,12 +72,14 @@ def crear_persona():
         "apellido": apellido,
         "email": email,
         "contrasenia": contrasenia,
-        "dni": dni,
         "fecha_nacimiento": fecha_nacimiento,
         "sexo": sexo,
         "domicilio": domicilio,
     }
-    return {"success": add_character(character), "id": id}
+    if nueva_persona(persona):
+        return jsonify({"message": "Persona creada correctamente."}), 200
+    else:
+        return jsonify({"message": "Persona eliminada correctamente."}), 404
 
 
 # EDITAR PERSONA
