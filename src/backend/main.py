@@ -57,8 +57,11 @@ def persona_id(id):
 
 # ELIMINAR PERSONA
 @app.route("/personas/<id>", methods=["DELETE"])
-def remover_persona_por_id(id):
-    return {"success": remover_persona_por_id(id)}
+def remover_persona(id):
+        if eliminar_persona(id):
+            return jsonify({"message": "Persona eliminada correctamente."}), 200
+        else:
+            return jsonify({"message": "Persona no encontrada."}), 404
 
 
 # CREAR PERSONA
