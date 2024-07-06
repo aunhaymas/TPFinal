@@ -15,6 +15,7 @@ db.session.commit() --> confirmar los cambios
 db.session.rollback() --> cancelar los cambios
 """
 
+
 class Persona(db.Model):
     __tablename__ = "personas"
     id = db.Column(db.Integer, primary_key=True)
@@ -96,14 +97,14 @@ def get_persona_por_id(id: int) -> dict[str, str] | None:
                 "apellido": persona.apellido,
                 "email": persona.email,
                 "contrasenia": persona.contrasenia,
-                #strftime convierte un datetime a texto
+                # strftime convierte un datetime a texto
                 "fecha_nacimiento": persona.fecha_nacimiento.strftime("%d-%m-%Y"),
                 "sexo": persona.sexo,
                 "domicilio": persona.domicilio,
             }
         return None
     except Exception as e:
-        print("Error al consultar con la base de datos! ",e)
+        print("Error al consultar con la base de datos! ", e)
         db.session.rollback()
         return None
 
@@ -157,7 +158,7 @@ def get_persona_full_info(id: int) -> dict[str, str] | None:
             "apellido": persona.apellido,
             "email": persona.email,
             "contrasenia": persona.contrasenia,
-            #strftime convierte un datetime a texto
+            # strftime convierte un datetime a texto
             "fecha_nacimiento": persona.fecha_nacimiento.strftime("%d-%m-%Y"),
             "sexo": persona.sexo,
             "domicilio": persona.domicilio,
@@ -174,6 +175,7 @@ def get_persona_full_info(id: int) -> dict[str, str] | None:
 # PRE: id entero, dict de nueva_persona
 # POST: Actualiza la persona en id, con los datos
 
+
 def editar_persona(id: int, persona_editada: dict[str, str]) -> bool:
     editada = False
     try:
@@ -183,35 +185,40 @@ def editar_persona(id: int, persona_editada: dict[str, str]) -> bool:
             persona.apellido = persona_editada["apellido"]
             persona.email = persona_editada["email"]
             persona.contrasenia = persona_editada["contrasenia"]
-            #strptime convierte un texto a objeto datetime
-            persona.fecha_nacimiento = datetime.strptime(persona_editada["fecha_nacimiento"], "%d-%m-%Y")
+            # strptime convierte un texto a objeto datetime
+            persona.fecha_nacimiento = datetime.strptime(
+                persona_editada["fecha_nacimiento"], "%d-%m-%Y"
+            )
             persona.sexo = persona_editada["sexo"]
             persona.domicilio = persona_editada["domicilio"]
-            
+
             db.session.commit()
             editada = True
         else:
-            print("No se encontró un registro con la persona: ",id)
+            print("No se encontró un registro con la persona: ", id)
     except Exception as e:
         print("Uy, quieto. Error: ", e)
         db.session.rollback()
     return editada
 
+
 def nueva_persona(persona_nueva: dict[str, str]) -> bool:
     exito = False
     try:
         persona = Persona(
-            nombre = persona_nueva["nombre"],
-            apellido = persona_nueva["apellido"],
+            nombre=persona_nueva["nombre"],
+            apellido=persona_nueva["apellido"],
             email=persona_nueva["email"],
             contrasenia=persona_nueva["contrasenia"],
-            fecha_nacimiento=datetime.strptime(persona_nueva["fecha_nacimiento"], "%d-%m-%Y"),
+            fecha_nacimiento=datetime.strptime(
+                persona_nueva["fecha_nacimiento"], "%d-%m-%Y"
+            ),
             sexo=persona_nueva["sexo"],
             domicilio=persona_nueva["domicilio"],
         )
         db.session.add(persona)
         db.session.commit
-    except Exception e:
+    except Exception as e:
         print("Uy, quieto. Error: ", e)
     return exito
 
@@ -269,14 +276,46 @@ def eliminar_vehiculo(id: int) -> bool:
         print("Uy, quieto. Error: ", e)
         db.session.rollback()
     return encontrado
-
-def get_vehiculos_por_persona(id: int) -> dict[str, str] | None:
+def editar_vehiculo(id: int, vehiculo_editado: dict[str,str]) -> bool:
+    editado = False
     try:
-        vehiculos = Vehiculo.query.filter_by(persona_id = id).all()
+        vehiculo = Vehiculo.query.get(id)
+        if vehiculo:
+            vehiculo.patente = vehiculo_editado["patente"]
+            vehiculo.fabricante = vehiculo_editado["fabricante"]
+            vehiculo.tipo = vehiculo_editado["tipo"]
+            vehiculo.modelo = vehiculo_editado["modelo"]
+            vehiculo.anio = vehiculo_editado["anio"]
+            vehiculo.valor = vehiculo_editado["valor"]
+            db.session.commit()
+            editado = True
+        else:
+            print("Tramite ",id, " No encontrado :c")                
+    except Exception as e:
+        print("Uy, quieto. Error: ", e)
+        db.session.rollback()
+    return editado
+
+
+def get_vehiculos_por_persona(id: int) -> list[dict[str, str]] | None:
+    try:
+        vehiculos = Vehiculo.query.filter_by(persona_id=id).all()
         if not vehiculos:
             return None
         else:
             return vehiculo_dict(vehiculos)
+    except Exception as e:
+        print("Uy, quieto. Error: ", e)
+        return None
+
+
+def get_tramites_por_persona(id: int) -> list[dict[str, str]] | None:
+    try:
+        tramites = Tramite.query.filter_by(persona_id=id).all()
+        if not tramites:
+            return None
+        else:
+            return tramite_dict(tramites)
     except Exception as e:
         print("Uy, quieto. Error: ", e)
         return None
