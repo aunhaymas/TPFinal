@@ -52,13 +52,13 @@ def listar_personas():
 # DEVOLVER PERSONA POR ID
 @app.route("/personas/<id>")
 def persona_id(id):
-    return get_character_by_id(id)
+    return get_persona_por_id(id)
 
 
 # ELIMINAR PERSONA
 @app.route("/personas/<id>", methods=["DELETE"])
 def remover_persona_por_id(id):
-    return {"success": remove_character(id)}
+    return {"success": remover_persona_por_id(id)}
 
 
 # CREAR PERSONA
