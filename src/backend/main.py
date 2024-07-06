@@ -109,7 +109,7 @@ def crear_persona():
     if nueva_persona(persona):
         return jsonify({"message": "Persona creada correctamente."}), 200
     else:
-        return jsonify({"message": "Persona eliminada correctamente."}), 404
+        return jsonify({"message": "No se pudo crear a la persona. Error en el formato de fecha?"}), 404
 
 
 # EDITAR PERSONA
