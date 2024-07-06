@@ -243,22 +243,25 @@ def eliminar_persona(id: int) -> bool:
         db.session.rollback()
     return encontrado
 
-def nuevo_tramite(tramite_nuevo: dict[str,str]) -> bool:
+
+def nuevo_tramite(tramite_nuevo: dict[str, str]) -> bool:
     exito = False
     try:
         tramite = Tramite(
-            tipo = tramite_nuevo["tipo"],
-            tipo = tramite_nuevo["valor"],
-            tipo = tramite_nuevo["fecha_tramite"],
-            tipo = tramite_nuevo["fecha_cita"],
-            tipo = tramite_nuevo["persona_id"],
+            tipo=tramite_nuevo["tipo"],
+            tipo=tramite_nuevo["valor"],
+            tipo=tramite_nuevo["fecha_tramite"],
+            tipo=tramite_nuevo["fecha_cita"],
+            tipo=tramite_nuevo["persona_id"],
         )
         db.session.add(tramite)
         db.session.commit()
+        exito = True
     except Exception as e:
         print("Uy, quieto. Error: ", e)
         db.session.rollback()
     return exito
+
 
 def eliminar_tramite(id: int) -> bool:
     encontrado = False
@@ -275,7 +278,9 @@ def eliminar_tramite(id: int) -> bool:
         print("Uy, quieto. Error: ", e)
         db.session.rollback()
     return encontrado
-def editar_tramite(id: int, tramite_editado: dict[str,str]) -> bool:
+
+
+def editar_tramite(id: int, tramite_editado: dict[str, str]) -> bool:
     editado = False
     try:
         tramite = Tramite.query.get(id)
@@ -288,12 +293,51 @@ def editar_tramite(id: int, tramite_editado: dict[str,str]) -> bool:
             db.session.commit()
             editado = True
         else:
-            print("Tramite ",id, " No encontrado :c")                
+            print("Tramite ", id, " No encontrado :c")
     except Exception as e:
         print("Uy, quieto. Error: ", e)
         db.session.rollback()
     return editado
 
+
+def nuevo_vehiculo(vehiculo_nuevo: dict[str, str]) -> bool:
+    exito = False
+    try:
+        vehiculo = Vehiculo(
+            patente = vehiculo_nuevo["patente"],
+            fabricante = vehiculo_nuevo["fabricante"],
+            tipo = vehiculo_nuevo["tipo"],
+            modelo = vehiculo_nuevo["modelo"],
+            anio = vehiculo_nuevo["anio"],
+            valor = vehiculo_nuevo["valor"],            
+        )
+        db.session.add(vehiculo)
+        db.session.commit()
+        exito = True
+    except Exception as e:
+        print("Uy, quieto. Error: ", e)
+        db.session.rollback()    
+    return exito
+
+def editar_vehiculo(id: int, vehiculo_editado: dict[str, str]) -> bool:
+    editado = False
+    try:
+        vehiculo = Vehiculo.query.get(id)
+        if vehiculo:
+            vehiculo.patente = vehiculo_editado["patente"]
+            vehiculo.fabricante = vehiculo_editado["fabricante"]
+            vehiculo.tipo = vehiculo_editado["tipo"]
+            vehiculo.modelo = vehiculo_editado["modelo"]
+            vehiculo.anio = vehiculo_editado["anio"]
+            vehiculo.valor = vehiculo_editado["valor"]
+            db.session.commit()
+            editado = True
+        else:
+            print("Tramite ", id, " No encontrado :c")
+    except Exception as e:
+        print("Uy, quieto. Error: ", e)
+        db.session.rollback()
+    return editado
 
 def eliminar_vehiculo(id: int) -> bool:
     encontrado = False
@@ -310,26 +354,6 @@ def eliminar_vehiculo(id: int) -> bool:
         print("Uy, quieto. Error: ", e)
         db.session.rollback()
     return encontrado
-def editar_vehiculo(id: int, vehiculo_editado: dict[str,str]) -> bool:
-    editado = False
-    try:
-        vehiculo = Vehiculo.query.get(id)
-        if vehiculo:
-            vehiculo.patente = vehiculo_editado["patente"]
-            vehiculo.fabricante = vehiculo_editado["fabricante"]
-            vehiculo.tipo = vehiculo_editado["tipo"]
-            vehiculo.modelo = vehiculo_editado["modelo"]
-            vehiculo.anio = vehiculo_editado["anio"]
-            vehiculo.valor = vehiculo_editado["valor"]
-            db.session.commit()
-            editado = True
-        else:
-            print("Tramite ",id, " No encontrado :c")                
-    except Exception as e:
-        print("Uy, quieto. Error: ", e)
-        db.session.rollback()
-    return editado
-
 
 def get_vehiculos_por_persona(id: int) -> list[dict[str, str]] | None:
     try:
