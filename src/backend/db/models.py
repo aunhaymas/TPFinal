@@ -3,13 +3,16 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 """Funciones sql
-Objeto_Modelo.query.all()
-Objeto_Modelo.query.get(id)
-Objeto_Modelo.query.filter_by( ObejoModelo.foreignKey = primaryKey).all()
-Tramite.query.filter_by(persona_id=id).all()
+ObjetoModelo.query.all() select all from ObjetoModelo
+ObjetoModelo.query.get(id)
+ObjetoModelo.query.filter_by( ObejoModelo.foreignKey = primaryKey).all()
 
-db.session.add(Objeto_Modelo) insert into tabla (Objeto_Modelo)
-db.session.commit() confirmar los cambios
+ejemplo: Tramite.query.filter_by(persona_id=id).all()
+
+
+db.session.add(ObjetoModelo) --> insert into tabla (ObjetoModelo)
+db.session.commit() --> confirmar los cambios
+db.session.rollback() --> cancelar los cambios
 """
 
 class Persona(db.Model):
@@ -266,3 +269,14 @@ def eliminar_vehiculo(id: int) -> bool:
         print("Uy, quieto. Error: ", e)
         db.session.rollback()
     return encontrado
+
+def get_vehiculos_por_persona(id: int) -> dict[str, str] | None:
+    try:
+        vehiculos = Vehiculo.query.filter_by(persona_id = id).all()
+        if not vehiculos:
+            return None
+        else:
+            return vehiculo_dict(vehiculos)
+    except Exception as e:
+        print("Uy, quieto. Error: ", e)
+        return None
