@@ -235,6 +235,10 @@ def eliminar_persona(id: int) -> bool:
         if persona:
             encontrado = True
             print("Persona ", persona.nombre, " Eliminada correctamente.")
+            #Eliminando foreign_keys
+            Tramite.query.filter_by(persona_id=id).delete()
+            Vehiculo.query.filter_by(persona_id=id).delete()
+            
             db.session.delete(persona)
             db.session.commit()
         else:
