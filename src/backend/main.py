@@ -81,9 +81,9 @@ def persona_id(id):
 @app.route("/personas/<id>", methods=["DELETE"])
 def remover_persona(id):
         if eliminar_persona(id):
-            return jsonify({"message": "Persona eliminada correctamente."}), 200
+            return jsonify({"success": True}), 200
         else:
-            return jsonify({"message": "Persona no encontrada."}), 404
+            return jsonify({"success": False}), 404
 
 
 # CREAR PERSONA
@@ -107,35 +107,35 @@ def crear_persona():
         "domicilio": domicilio,
     }
     if nueva_persona(persona):
-        return jsonify({"message": "Persona creada correctamente."}), 200
+        return jsonify({"success": True}), 200
     else:
-        return jsonify({"message": "No se pudo crear a la persona. Error en el formato de fecha?"}), 404
+        return jsonify({"success": False}), 404
 
 
 # EDITAR PERSONA
 
 
 @app.route("/personas", methods=["PUT"])
-def _edit_persona():
-    id = request.json.get("id")
-    name = request.json.get("name")
-    names = request.json.get("names")
-    alignment = request.json.get("alignment")
-    gender = request.json.get("gender")
-    publisher = request.json.get("publisher")
-    race = request.json.get("race")
-    image = request.json.get("image")
-    character = {
+def edit_persona():
+    id = request.json.get("id_persona")
+    nombre = request.json.get("nombre")
+    apellido = request.json.get("apellido")
+    email = request.json.get("email")
+    contrasenia = request.json.get("contrasenia")
+    fecha_nacimiento = request.json.get("fecha_nacimiento")
+    sexo = request.json.get("sexo")
+    domicilio = request.json.get("domicilio")
+    persona_editada = {
         "id": id,
-        "gender": gender,
-        "alignment": alignment,
-        "image": image,
-        "name": name,
-        "names": names,
-        "publisher": publisher,
-        "race": race,
+        "nombre": nombre,
+        "apellido": apellido,
+        "email": email,
+        "contrasenia": contrasenia,
+        "fecha_nacimiento": fecha_nacimiento,
+        "sexo": sexo,
+        "domicilio": domicilio,
     }
-    return {"success": edit_character(character)}
+    return jsonify({"success": editar_persona(id, persona_editada)})
 
 
 if __name__ == "__main__":
