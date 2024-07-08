@@ -186,8 +186,8 @@ def crear_vehiculo():
         else:
             return jsonify({"success": False}), 404
     except Exception as error:
-        print("Error!", error)
-        return jsonify({"error": error}), 404
+        print("Error al crear vehículo", error)
+        return jsonify({"message": "Error interno"}), 500
     
 
 # ELIMINAR VEHICULO

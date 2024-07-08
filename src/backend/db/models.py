@@ -312,6 +312,9 @@ def editar_tramite(id: int, tramite_editado: dict[str, str]) -> bool:
 def nuevo_vehiculo(vehiculo_nuevo: dict[str, str]) -> bool:
     exito = False
     try:
+        if Vehiculo.query.filter_by(patente=vehiculo_nuevo["patente"]).first():
+            print("La patente ya esta en uso")
+            return exito
         vehiculo = Vehiculo(
             patente = vehiculo_nuevo["patente"],
             fabricante = vehiculo_nuevo["fabricante"],
