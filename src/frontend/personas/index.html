@@ -68,6 +68,27 @@
             return response.json()
         }
 
+        function obtenerEdad(fecha_nacimiento) {
+            
+            var tiempo_actual = new Date();
+            var subdivision = fecha_nacimiento.split('-');
+            var anio = parseInt(subdivision[0]);
+            var mes = parseInt(subdivision[1]);
+            var dia = parseInt(subdivision[2]);
+
+            var tiempo_nacimiento = new Date(anio, mes, dia);
+            var edad = tiempo_actual.getFullYear() - tiempo_nacimiento.getFullYear();
+            var mes = tiempo_actual.getMonth() - tiempo_nacimiento.getMonth() + 1;
+            console.log(tiempo_actual.getMonth() );
+
+            if(mes < 0 || (mes==0 && tiempo_actual.getDate() < tiempo_nacimiento.getDate())) {
+                edad--;
+                console.log(mes)
+            }
+
+            return edad; 
+        }
+
         function data(content) {
             const personas = document.getElementById("personas");
 
@@ -96,7 +117,7 @@
                 persona.append(email);
 
                 const edad = document.createElement("td");
-                edad.innerText = content[index].fecha_nacimiento;
+                edad.innerText = obtenerEdad(content[index].fecha_nacimiento);
                 persona.append(edad);
                 
                 const sexo = document.createElement("td");
