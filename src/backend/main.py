@@ -90,6 +90,7 @@ def remover_persona(id):
 @app.route("/personas", methods=["POST"])
 def crear_persona():
     data = request.json
+
     nombre = data.get("nombre")
     apellido = data.get("apellido")
     email = data.get("email")
@@ -136,6 +137,49 @@ def edit_persona():
         "domicilio": domicilio,
     }
     return jsonify({"success": editar_persona(id, persona_editada)})
+
+
+# LISTAR TODOS LOS VEHICULOS DE TODAS LAS PERSONAS
+
+@app.route("/vehiculos", methods=["GET"])
+def listar_vehiculos():
+    try:
+        vehiculos = Vehiculo.query.order_by(Vehiculo.id).all()
+        vehiculos_data = vehiculo_dict(vehiculos)
+        return jsonify(vehiculos_data)
+    except Exception as error:
+        print("Error", error)
+        return jsonify({'error': error})
+    
+# AÑADIR VEHICULO
+@app.route("/vehiculos", methods=["POST"])
+def crear_vehiculo():
+    try:
+        data = request.json
+
+        patente = data.get("patente")
+        fabricante = data.get("fabricante")
+        tipo = data.get("tipo")
+        modelo = data.get("modelo")
+        anio = data.get("anio")
+        valor = data.get("valor")
+        persona_id = data.get("persona_id")
+        vehiculo = {
+            "patente": patente,
+            "fabricante": fabricante,
+            "tipo": tipo,
+            "modelo": modelo,
+            "anio": anio,
+            "valor": valor,
+            "persona_id": persona_id,
+        }
+        
+        if(nuevo_vehiculo(vehiculo)):
+            return jsonify({"success": True}), 200
+    except Exception as error:
+        print("Error!", error)
+        return jsonify({"success": False}), 404
+
 
 
 if __name__ == "__main__":
