@@ -89,28 +89,31 @@ def remover_persona(id):
 # CREAR PERSONA
 @app.route("/personas", methods=["POST"])
 def crear_persona():
-    data = request.json
-
-    nombre = data.get("nombre")
-    apellido = data.get("apellido")
-    email = data.get("email")
-    contrasenia = data.get("contrasenia")
-    fecha_nacimiento = data.get("fecha_nacimiento")
-    sexo = data.get("sexo")
-    domicilio = data.get("domicilio")
-    persona = {
-        "nombre": nombre,
-        "apellido": apellido,
-        "email": email,
-        "contrasenia": contrasenia,
-        "fecha_nacimiento": fecha_nacimiento,
-        "sexo": sexo,
-        "domicilio": domicilio,
-    }
-    if nueva_persona(persona):
-        return jsonify({"success": True}), 200
-    else:
-        return jsonify({"success": False}), 404
+    try:
+        data = request.json
+        nombre = data.get("nombre")
+        apellido = data.get("apellido")
+        email = data.get("email")
+        contrasenia = data.get("contrasenia")
+        fecha_nacimiento = data.get("fecha_nacimiento")
+        sexo = data.get("sexo")
+        domicilio = data.get("domicilio")
+        persona = {
+            "nombre": nombre,
+            "apellido": apellido,
+            "email": email,
+            "contrasenia": contrasenia,
+            "fecha_nacimiento": fecha_nacimiento,
+            "sexo": sexo,
+            "domicilio": domicilio,
+        }
+        if nueva_persona(persona):
+            return jsonify({"success": True}), 200
+        else:
+            return jsonify({"success": False}), 404
+    except Exception as e:
+        print("Error al crear persona ", e)
+        return jsonify({"message": "Error interno."}), 500
 
 
 # EDITAR PERSONA
@@ -141,6 +144,7 @@ def edit_persona():
 
 # LISTAR TODOS LOS VEHICULOS DE TODAS LAS PERSONAS
 
+
 @app.route("/vehiculos", methods=["GET"])
 def listar_vehiculos():
     try:
@@ -151,7 +155,10 @@ def listar_vehiculos():
         print("Error", error)
         return jsonify({'error': error})
     
+    
 # AÑADIR VEHICULO
+
+
 @app.route("/vehiculos", methods=["POST"])
 def crear_vehiculo():
     try:
@@ -176,9 +183,76 @@ def crear_vehiculo():
         
         if(nuevo_vehiculo(vehiculo)):
             return jsonify({"success": True}), 200
+        else:
+            return jsonify({"success": False}), 404
     except Exception as error:
         print("Error!", error)
-        return jsonify({"success": False}), 404
+        return jsonify({"error": error}), 404
+    
+
+# ELIMINAR VEHICULO
+
+
+@app.route("/vehiculos/<id>", methods=["DELETE"])
+def remover_vehiculo(id):
+    try:
+        if(eliminar_vehiculo(id)):
+            return jsonify({"success": True}), 200
+        else:
+            return jsonify({"success": False}), 404
+    except Exception as error:
+        print("Error al remover el vehiculo: ", error)
+        return jsonify({"error": error}), 500
+
+
+# DEVOLVER VEHICULO POR ID
+
+
+@app.route("/vehiculos/<id>", methods=["GET"])
+def obtener_vehiculo(id):
+    try:
+        vehiculo = Vehiculo.query.get(id)
+        vehiculo_data = {
+            'patente': vehiculo.patente,
+            'fabricante': vehiculo.fabricante,
+            'tipo': vehiculo.tipo,
+            'modelo': vehiculo.modelo,
+            'anio': vehiculo.anio,
+            'valor': vehiculo.valor,
+        }
+        return jsonify(vehiculo_data), 200
+    except Exception as e:
+        return jsonify({"Error al obtener vehiculo: ",e}), 500
+    
+
+# EDITAR VEHICULO
+
+
+@app.route("/vehiculos", methods=["PUT"])
+def edit_vehiculo():
+    try:
+        id = request.json.get("id_vehiculo")
+        patente = request.json.get("patente")
+        fabricante = request.json.get("fabricante")
+        tipo = request.json.get("tipo")
+        modelo = request.json.get("modelo")
+        anio = request.json.get("anio")
+        valor = request.json.get("valor")
+        persona_id = request.json.get("persona_id")
+        vehiculo_editado = {
+            "id": id,
+            "patente": patente,
+            "fabricante": fabricante,
+            "tipo": tipo,
+            "modelo": modelo,
+            "anio": anio,
+            "valor": valor,
+            "persona_id": persona_id
+        }
+        return jsonify({"success": editar_vehiculo(id, vehiculo_editado)}), 200
+    except Exception as error:
+        print("Error!", error)
+        return jsonify({"error": error}), 500
 
 
 
