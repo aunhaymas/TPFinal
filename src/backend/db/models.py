@@ -72,7 +72,7 @@ def get_all_personas() -> list[dict[str, str]] | None:
                 "apellido": persona.apellido,
                 "email": persona.email,
                 "contrasenia": persona.contrasenia,
-                "fecha_nacimiento": persona.fecha_nacimiento.strftime("%d-%m-%Y"),
+                "fecha_nacimiento": persona.fecha_nacimiento.strftime("%Y-%m-%d"),
                 "sexo": persona.sexo,
                 "domicilio": persona.domicilio,
             }
@@ -122,6 +122,7 @@ def vehiculo_dict(vehiculos) -> list[dict[str, str]]:
             "modelo": vehiculo.modelo,
             "anio": vehiculo.anio,
             "valor": vehiculo.valor,
+            "persona_id": vehiculo.persona_id,
         }
         vehiculo_list.append(vehiculo_dict)
     return vehiculo_list
