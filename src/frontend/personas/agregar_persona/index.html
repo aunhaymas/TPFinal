@@ -45,7 +45,7 @@
         </div>
         <div class="card text-center my-4 p-4 mx-auto" style="width: 50em;">
             <div class="card-body">
-                <form class="needs-validation" onsubmit="crear_persona(event)">
+                <form class="needs-validation" onsubmit="crearPersona(event)">
                     <div class="row m-2 p-2">
                         <div class="col form-floating">
                             <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Nombres" required>
@@ -68,7 +68,7 @@
                     </div>
                     <div class="row m-2 p-2">
                         <div class="col form-floating">
-                            <input class="form-control" type="date" id="fecha_nacimiento" name="fecha_nacimiento" required>
+                            <input class="form-control" type="date" id="fecha_nacimiento" name="fecha_nacimiento" min="1900-01-01" required>
                             <label class="mx-3" for="fecha_nacimiento">Fecha de Nacimiento</label>
                         </div>
                         <div class="col d-flex align-content-center justify-content-center">
@@ -104,16 +104,34 @@
 
     <script>
         
-        function manejar_respuesta(data) {
+        function manejarRespuesta(data) {
             if(data.success) {
                 window.location.href = ".."
             }else{
-                alert("Error! ");
+                alert("Error! Es muy probable que el correo ya esté en uso.");
             }
         }
 
+
+        function obtenerFecha() {
+            const actualidad = new Date();
+            var anio = actualidad.getFullYear();
+            var mes = actualidad.getMonth() + 1;
+            var dia = actualidad.getDate();
+            
+            if(mes < 10) {
+                mes = '0' + mes;
+            }
+            if ( dia < 10) {
+                dia = '0' + dia;
+            }
+
+            const fecha_actual = (anio + '-' + mes + '-' + dia);
+            return fecha_actual;
+        }
+
     
-        function crear_persona(event) {
+        function crearPersona(event) {
             event.preventDefault();
 
             const formData = new FormData(event.target);
@@ -145,13 +163,14 @@
                 })
             })
                 .then((res) => res.json())
-                .then(manejar_respuesta)
+                .then(manejarRespuesta)
                 .catch((error) => console.log("Error", error))
 
         }
         
-        
-    
+        // Establece la fecha actual como limite maximo en el input de la fecha
+        const form_input_date = document.getElementById("fecha_nacimiento");
+        form_input_date.setAttribute("max", obtenerFecha());
 
     </script>
 </body>
