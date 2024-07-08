@@ -68,6 +68,10 @@
             return response.json()
         }
 
+        function primeraLetraMayuscula(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+
         function obtenerEdad(fecha_nacimiento) {
             
             var tiempo_actual = new Date();
@@ -121,7 +125,7 @@
                 persona.append(edad);
                 
                 const sexo = document.createElement("td");
-                sexo.innerText = content[index].sexo;
+                sexo.innerText = primeraLetraMayuscula(content[index].sexo);
                 persona.append(sexo);
 
                 const domicilio = document.createElement("td");

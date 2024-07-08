@@ -206,6 +206,9 @@ def editar_persona(id: int, persona_editada: dict[str, str]) -> bool:
 def nueva_persona(persona_nueva: dict[str, str]) -> bool:
     exito = False
     try:
+        if Persona.query.filter_by(email=persona_nueva["email"]).first():
+            print("El email esta en uso")
+            return exito
         persona = Persona(
             nombre=persona_nueva["nombre"],
             apellido=persona_nueva["apellido"],
