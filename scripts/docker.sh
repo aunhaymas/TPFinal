@@ -1,7 +1,7 @@
 #Si pasa algun error porque la base de datos no esta inicializada, ejecutar python3 main.py en la carpeta backend
 echo "Creando sesion docker con el puerto 5432 y data en src/backend/data"
 NOMBRE_CONTENEDOR='renaper' # Para identificar internamente al contenedor
-systemctl stop postgresql # Docker no cierra automaticamente el servidor de backend
+#systemctl stop postgresql # Docker no cierra automaticamente el servidor de backend
 docker stop $NOMBRE_CONTENEDOR # Si no encuentra el contenedor sale una advertencia. ignorar
 docker rm $NOMBRE_CONTENEDOR # si no encuentra el contenedor sale una advertencia. ignorar
 ABRIR_POSTGRESQL="psql -U postgres"

@@ -7,7 +7,7 @@ sleep 6
 
 # Levanta el servidor de front-end en localhost:8000
 
-gnome-terminal --working-directory ./src/frontend -- python3 -m http.server
+gnome-terminal -- bash ./scripts/frontend_server.sh
 
 # Levanta el virtualenv
 
