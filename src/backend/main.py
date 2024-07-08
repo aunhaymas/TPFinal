@@ -89,27 +89,31 @@ def remover_persona(id):
 # CREAR PERSONA
 @app.route("/personas", methods=["POST"])
 def crear_persona():
-    data = request.json
-    nombre = data.get("nombre")
-    apellido = data.get("apellido")
-    email = data.get("email")
-    contrasenia = data.get("contrasenia")
-    fecha_nacimiento = data.get("fecha_nacimiento")
-    sexo = data.get("sexo")
-    domicilio = data.get("domicilio")
-    persona = {
-        "nombre": nombre,
-        "apellido": apellido,
-        "email": email,
-        "contrasenia": contrasenia,
-        "fecha_nacimiento": fecha_nacimiento,
-        "sexo": sexo,
-        "domicilio": domicilio,
-    }
-    if nueva_persona(persona):
-        return jsonify({"message": "Persona creada correctamente."}), 200
-    else:
-        return jsonify({"message": "No se pudo crear a la persona. Error en el formato de fecha?"}), 404
+    try:
+        data = request.json
+        nombre = data.get("nombre")
+        apellido = data.get("apellido")
+        email = data.get("email")
+        contrasenia = data.get("contrasenia")
+        fecha_nacimiento = data.get("fecha_nacimiento")
+        sexo = data.get("sexo")
+        domicilio = data.get("domicilio")
+        persona = {
+            "nombre": nombre,
+            "apellido": apellido,
+            "email": email,
+            "contrasenia": contrasenia,
+            "fecha_nacimiento": fecha_nacimiento,
+            "sexo": sexo,
+            "domicilio": domicilio,
+        }
+        if nueva_persona(persona):
+            return jsonify({"message": "Persona creada correctamente."}), 200
+        else:
+            return jsonify({"message": "No se pudo crear a la persona. Error en el formato de fecha o email duplicado"}), 400
+    except Exception as e:
+        print("Error al crear persona ", e)
+        return jsonify({"message": "Error interno."}), 500
 
 
 # EDITAR PERSONA
