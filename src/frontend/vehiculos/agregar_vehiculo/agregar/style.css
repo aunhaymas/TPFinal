@@ -1,0 +1,6 @@
+input[id=valor]::-webkit-inner-spin-button,
+input[id=valor]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+    }
+input[id=valor] { -moz-appearance:textfield; }
