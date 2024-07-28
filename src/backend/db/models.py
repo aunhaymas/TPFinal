@@ -60,7 +60,7 @@ class Tramite(db.Model):
 
 def get_all_personas() -> list[dict[str, str]] | None:
     try:
-        personas = Persona.query.all()
+        personas = Persona.query.order_by(Persona.id).all()
         if not personas:
             return None
         personas_lista = []
@@ -72,7 +72,7 @@ def get_all_personas() -> list[dict[str, str]] | None:
                 "apellido": persona.apellido,
                 "email": persona.email,
                 "contrasenia": persona.contrasenia,
-                "fecha_nacimiento": persona.fecha_nacimiento.strftime("%d-%m-%Y"),
+                "fecha_nacimiento": persona.fecha_nacimiento.strftime("%Y-%m-%d"),
                 "sexo": persona.sexo,
                 "domicilio": persona.domicilio,
             }
@@ -98,7 +98,7 @@ def get_persona_por_id(id: int) -> dict[str, str] | None:
                 "email": persona.email,
                 "contrasenia": persona.contrasenia,
                 # strftime convierte un datetime a texto
-                "fecha_nacimiento": persona.fecha_nacimiento.strftime("%d-%m-%Y"),
+                "fecha_nacimiento": persona.fecha_nacimiento.strftime("%Y-%m-%d"),
                 "sexo": persona.sexo,
                 "domicilio": persona.domicilio,
             }
@@ -122,6 +122,7 @@ def vehiculo_dict(vehiculos) -> list[dict[str, str]]:
             "modelo": vehiculo.modelo,
             "anio": vehiculo.anio,
             "valor": vehiculo.valor,
+            "persona_id": vehiculo.persona_id,
         }
         vehiculo_list.append(vehiculo_dict)
     return vehiculo_list
@@ -187,7 +188,7 @@ def editar_persona(id: int, persona_editada: dict[str, str]) -> bool:
             persona.contrasenia = persona_editada["contrasenia"]
             # strptime convierte un texto a objeto datetime
             persona.fecha_nacimiento = datetime.strptime(
-                persona_editada["fecha_nacimiento"], "%d-%m-%Y"
+                persona_editada["fecha_nacimiento"], "%Y-%m-%d"
             )
             persona.sexo = persona_editada["sexo"]
             persona.domicilio = persona_editada["domicilio"]
@@ -214,7 +215,7 @@ def nueva_persona(persona_nueva: dict[str, str]) -> bool:
             email=persona_nueva["email"],
             contrasenia=persona_nueva["contrasenia"],
             fecha_nacimiento=datetime.strptime(
-                persona_nueva["fecha_nacimiento"], "%d-%m-%Y"
+                persona_nueva["fecha_nacimiento"], "%Y-%m-%d"
             ),
             sexo=persona_nueva["sexo"],
             domicilio=persona_nueva["domicilio"],
@@ -311,6 +312,9 @@ def editar_tramite(id: int, tramite_editado: dict[str, str]) -> bool:
 def nuevo_vehiculo(vehiculo_nuevo: dict[str, str]) -> bool:
     exito = False
     try:
+        if Vehiculo.query.filter_by(patente=vehiculo_nuevo["patente"]).first():
+            print("La patente ya esta en uso")
+            return exito
         vehiculo = Vehiculo(
             patente = vehiculo_nuevo["patente"],
             fabricante = vehiculo_nuevo["fabricante"],
