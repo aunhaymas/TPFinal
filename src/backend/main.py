@@ -32,13 +32,14 @@ def home():
 @app.route("/personas")
 def listar_personas():
     try:
-        personas =  get_all_personas()
+        personas = get_all_personas()
         if personas != None:
             return jsonify(personas), 200
         else:
             return jsonify({"Error: ": "No hay personas en la base de datos"}), 404
     except Exception as e:
         return jsonify({"Error: ": e}), 500
+
 
 # DEVOLVER TRAMITES POR PERSONA ID
 @app.route("/personas/<id>/tramites")
@@ -48,42 +49,58 @@ def listar_tramites_por_persona(id):
         if tramites:
             return jsonify(tramites), 200
         else:
-            return jsonify({"Error: ": f"No hay tramites en la base de datos para esta persona {id}"}), 404
+            return (
+                jsonify(
+                    {
+                        "Error: ": f"No hay tramites en la base de datos para esta persona {id}"
+                    }
+                ),
+                404,
+            )
     except Exception as e:
         return jsonify({"Error: ", e}), 500
+
+
 # DEVOLVER VEHICULOS POR PERSONA ID
-@app.route("/personas/<id>/vehiculos",methods=["GET"])
+@app.route("/personas/<id>/vehiculos", methods=["GET"])
 def listar_vehiculos_por_persona(id):
     try:
         vehiculos = get_vehiculos_por_persona(id)
         if vehiculos:
             return jsonify(vehiculos), 200
         else:
-            return jsonify({"Error: ": f"No hay vehiculos en la base de datos para esta persona {id}"}), 404
+            return (
+                jsonify(
+                    {
+                        "Error: ": f"No hay vehiculos en la base de datos para esta persona {id}"
+                    }
+                ),
+                404,
+            )
     except Exception as e:
-        return jsonify({"Error: ", e}), 500            
+        return jsonify({"Error: ", e}), 500
+
 
 # DEVOLVER PERSONA POR ID
-@app.route("/personas/<id>",methods=["GET"])
+@app.route("/personas/<id>", methods=["GET"])
 def persona_id(id):
     try:
         persona = get_persona_por_id(id)
         if persona != None:
-            return jsonify(persona),200
+            return jsonify(persona), 200
         else:
             return jsonify({"error": f"Persona no encontrada con id: {id}"}), 404
     except Exception as e:
-        return jsonify({"Error al obtener persona: ",e}), 500
-
+        return jsonify({"Error al obtener persona: ", e}), 500
 
 
 # ELIMINAR PERSONA
 @app.route("/personas/<id>", methods=["DELETE"])
 def remover_persona(id):
-        if eliminar_persona(id):
-            return jsonify({"success": True}), 200
-        else:
-            return jsonify({"success": False}), 404
+    if eliminar_persona(id):
+        return jsonify({"success": True}), 200
+    else:
+        return jsonify({"success": False}), 404
 
 
 # CREAR PERSONA
@@ -108,9 +125,20 @@ def crear_persona():
             "domicilio": domicilio,
         }
         if nueva_persona(persona):
-            return jsonify({"message": "Persona creada correctamente."}), 200
+            return (
+                jsonify({"success": True, "message": "Persona creada correctamente."}),
+                200,
+            )
         else:
-            return jsonify({"message": "No se pudo crear a la persona. Error en el formato de fecha o email duplicado"}), 400
+            return (
+                jsonify(
+                    {
+                        "success": False,
+                        "message": "No se pudo crear a la persona.",
+                    }
+                ),
+                400,
+            )
     except Exception as e:
         print("Error al crear persona ", e)
         return jsonify({"message": "Error interno."}), 500
@@ -153,9 +181,9 @@ def listar_vehiculos():
         return jsonify(vehiculos_data)
     except Exception as error:
         print("Error", error)
-        return jsonify({'error': error})
-    
-    
+        return jsonify({"error": error})
+
+
 # AÑADIR VEHICULO
 
 
@@ -180,15 +208,15 @@ def crear_vehiculo():
             "valor": valor,
             "persona_id": persona_id,
         }
-        
-        if(nuevo_vehiculo(vehiculo)):
+
+        if nuevo_vehiculo(vehiculo):
             return jsonify({"success": True}), 200
         else:
             return jsonify({"success": False}), 404
     except Exception as error:
         print("Error al crear vehículo", error)
         return jsonify({"message": "Error interno"}), 500
-    
+
 
 # ELIMINAR VEHICULO
 
@@ -196,7 +224,7 @@ def crear_vehiculo():
 @app.route("/vehiculos/<id>", methods=["DELETE"])
 def remover_vehiculo(id):
     try:
-        if(eliminar_vehiculo(id)):
+        if eliminar_vehiculo(id):
             return jsonify({"success": True}), 200
         else:
             return jsonify({"success": False}), 404
@@ -213,17 +241,17 @@ def obtener_vehiculo(id):
     try:
         vehiculo = Vehiculo.query.get(id)
         vehiculo_data = {
-            'patente': vehiculo.patente,
-            'fabricante': vehiculo.fabricante,
-            'tipo': vehiculo.tipo,
-            'modelo': vehiculo.modelo,
-            'anio': vehiculo.anio,
-            'valor': vehiculo.valor,
+            "patente": vehiculo.patente,
+            "fabricante": vehiculo.fabricante,
+            "tipo": vehiculo.tipo,
+            "modelo": vehiculo.modelo,
+            "anio": vehiculo.anio,
+            "valor": vehiculo.valor,
         }
         return jsonify(vehiculo_data), 200
     except Exception as e:
-        return jsonify({"Error al obtener vehiculo: ",e}), 500
-    
+        return jsonify({"Error al obtener vehiculo: ", e}), 500
+
 
 # EDITAR VEHICULO
 
@@ -247,13 +275,12 @@ def edit_vehiculo():
             "modelo": modelo,
             "anio": anio,
             "valor": valor,
-            "persona_id": persona_id
+            "persona_id": persona_id,
         }
         return jsonify({"success": editar_vehiculo(id, vehiculo_editado)}), 200
     except Exception as error:
         print("Error!", error)
         return jsonify({"error": error}), 500
-
 
 
 if __name__ == "__main__":
